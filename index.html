@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>UCL Scoreboard Live - Broadcast Edition</title>
+  <title>La Liga - Control & Scoreboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800;1,900&family=Barlow+Semi+Condensed:wght@600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
@@ -34,35 +34,42 @@
     }
 
     body.control-mode {
-      background: #0b0f19;
-      color: #ffffff;
-      padding-bottom: 50px;
+      background: #090d16;
+      color: #f8fafc;
+      padding-bottom: 40px;
     }
 
     /* ==========================================
-       MARCADOR OFICIAL UCL (ESQUINA SUPERIOR IZQ)
+       MARCADOR OFICIAL (ESQUINA SUPERIOR IZQ)
        ========================================== */
-    .scoreboard-wrapper {
+    .scoreboard-container {
       position: fixed;
       top: 42px;
       left: 52px;
-      display: flex;
-      align-items: stretch;
-      height: 52px;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
     }
 
     @media (max-width: 768px) {
-      body.control-mode .scoreboard-wrapper {
+      body.control-mode .scoreboard-container {
         position: relative;
         top: 0;
         left: 0;
-        margin: 18px auto 8px auto;
-        justify-content: center;
-        transform: scale(0.75);
+        margin: 14px auto 4px auto;
+        align-items: center;
+        transform: scale(0.72);
         transform-origin: center top;
       }
+    }
+
+    .scoreboard-wrapper {
+      display: flex;
+      align-items: stretch;
+      height: 52px;
+      position: relative;
     }
 
     /* BLOQUE IZQUIERDO: LOGO + RELOJ */
@@ -82,7 +89,6 @@
       position: relative;
     }
 
-    /* Ajuste para el logo.png provisto */
     .ucl-logo-img {
       width: 68px;
       height: 68px;
@@ -124,13 +130,13 @@
       font-size: 20px;
       padding: 2px 10px;
       display: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
 
     .added-time-badge.active {
       display: block;
     }
 
-    /* SEPARACIÓN TRANSPARENTE DE 8PX */
     .spacer {
       width: 8px;
       background: transparent;
@@ -143,10 +149,8 @@
       height: 100%;
       background: linear-gradient(90deg, var(--ucl-bar-start) 0%, var(--ucl-bar-mid) 50%, var(--ucl-bar-end) 100%);
       position: relative;
-      overflow: hidden;
     }
 
-    /* Franjas verticales divisibles en 2 colores */
     .team-stripe {
       width: 9px;
       height: 100%;
@@ -161,17 +165,38 @@
       transition: background-color 0.25s ease;
     }
 
-    .team-code {
+    .team-box {
       width: 124px;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+    }
+
+    .team-code {
       font-family: 'Montserrat', sans-serif;
       font-size: 31px;
       font-weight: 600;
       color: #ffffff;
       letter-spacing: 2.5px;
       text-transform: uppercase;
+    }
+
+    /* Indicadores de Tarjetas Rojas encima de cada equipo */
+    .red-cards-holder {
+      position: absolute;
+      top: -11px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .red-card-icon {
+      width: 9px;
+      height: 12px;
+      background: #ff1744;
+      border: 1px solid #ffffff;
+      border-radius: 1px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .score-center {
@@ -205,6 +230,50 @@
       margin: 0 3px;
     }
 
+    /* BARRA INFERIOR DE PENALES */
+    .penalties-drawer {
+      margin-left: 200px;
+      margin-top: 4px;
+      background: rgba(4, 3, 66, 0.95);
+      border-left: 3px solid #00e5ff;
+      padding: 5px 14px;
+      display: none;
+      align-items: center;
+      gap: 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .penalties-drawer.active {
+      display: flex;
+    }
+
+    .pen-team-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pen-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .pen-dot.scored {
+      background: #00e676;
+      border-color: #00e676;
+      box-shadow: 0 0 6px rgba(0,230,118,0.6);
+    }
+
+    .pen-dot.missed {
+      background: #ff1744;
+      border-color: #ff1744;
+    }
+
     /* ====================================================
        CAPAS DE TRANSICIÓN DINÁMICA DE GOL (IZQ -> DER)
        ==================================================== */
@@ -216,7 +285,6 @@
       overflow: hidden;
     }
 
-    /* 1. Cortina bicolor del equipo que barre de izquierda a derecha */
     .goal-color-wipe {
       position: absolute;
       inset: 0;
@@ -231,7 +299,6 @@
       height: 50%;
     }
 
-    /* 2. Banner azul oficial con texto GOAL itálico y franja del anotador a la derecha */
     .goal-text-stage {
       position: absolute;
       inset: 0;
@@ -253,7 +320,6 @@
       opacity: 0;
     }
 
-    /* Contorno paralelo sutil detrás de GOAL como en la captura */
     .goal-word-outline {
       position: absolute;
       font-family: 'Barlow Condensed', sans-serif;
@@ -279,7 +345,6 @@
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
     }
 
-    /* Franja derecha con los 2 colores del equipo que anotó durante el cartel GOAL */
     .goal-scorer-end-stripe {
       position: absolute;
       right: 0;
@@ -290,7 +355,6 @@
       flex-direction: column;
     }
 
-    /* Keyframes de la secuencia completa (3.4 segundos) */
     .goal-animation-layer.active .goal-color-wipe {
       animation: wipeSequence 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
@@ -303,7 +367,6 @@
       animation: wordSequence 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    /* La barra bicolor entra de izq a der, se mantiene de fondo y sale hacia la derecha */
     @keyframes wipeSequence {
       0%   { transform: translateX(-102%); }
       14%  { transform: translateX(0%); }
@@ -311,7 +374,6 @@
       100% { transform: translateX(102%); }
     }
 
-    /* El contenedor azul GOAL entra de izq a der justo detrás de los 2 colores del club */
     @keyframes stageSequence {
       0%, 20% { transform: translateX(-102%); }
       34%     { transform: translateX(0%); }
@@ -319,7 +381,6 @@
       92%, 100% { transform: translateX(102%); }
     }
 
-    /* El texto GOAL se desliza con potencia en el centro */
     @keyframes wordSequence {
       0%, 24% { transform: translateX(-50px); opacity: 0; }
       38%     { transform: translateX(0px); opacity: 1; }
@@ -328,22 +389,23 @@
     }
 
     /* ==========================================
-       PANEL DE CONTROL (CELULAR Y PC)
+       CONSOLA DE CONTROL "LA LIGA" (MOBILE & PC)
        ========================================== */
     .control-panel {
-      max-width: 540px;
-      margin: 115px auto 20px auto;
-      background: #151c2c;
-      border: 1px solid #263147;
-      border-radius: 16px;
+      max-width: 780px;
+      margin: 120px auto 20px auto;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 18px;
       padding: 20px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
     @media (max-width: 768px) {
       .control-panel {
-        margin: 0 12px;
-        padding: 15px;
+        margin: 0 10px;
+        padding: 14px;
+        border-radius: 14px;
       }
     }
 
@@ -351,385 +413,676 @@
       display: none !important;
     }
 
-    .panel-header {
+    /* CABECERA Y NAVEGACIÓN POR PESTAÑAS */
+    .panel-topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #263147;
+      margin-bottom: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .panel-title {
-      font-size: 15px;
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0033ff, #00c6ff);
+      color: #fff;
       font-weight: 800;
-      text-transform: uppercase;
+      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 8px;
       letter-spacing: 1px;
-      color: #00e5ff;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f8fafc;
     }
 
     .status-pill {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 99px;
-      background: #1e293b;
-      color: #94a3b8;
+      background: #1f2937;
+      color: #9ca3af;
     }
 
     .status-pill.online {
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      border: 1px solid rgba(52, 211, 153, 0.35);
     }
 
-    .section-box {
-      background: #0f1522;
-      border: 1px solid #1e293b;
+    /* PESTAÑAS DE MODO (EN VIVO vs CONFIGURAR) */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #0b0f19;
+      padding: 4px;
       border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      border: 1px solid #1f2937;
     }
 
-    .section-label {
+    .tab-btn {
+      background: transparent;
+      color: #9ca3af;
+      padding: 10px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #1e293b;
+      color: #38bdf8;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    /* LAYOUT EN PC (2 COLUMNAS) Y CELULAR (1 COLUMNA) */
+    .live-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .live-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-box {
+      background: #182235;
+      border: 1px solid #28354f;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       color: #94a3b8;
-      margin-bottom: 10px;
       letter-spacing: 0.8px;
     }
 
-    .teams-grid {
+    /* TARJETAS DE GOL EN VIVO */
+    .live-teams-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .team-card {
-      background: #161f33;
-      padding: 12px;
-      border-radius: 10px;
+    .live-team-unit {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px 10px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .input-row {
-      margin-bottom: 8px;
-    }
-
-    .colors-row {
+    .unit-color-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 10px;
-      background: #0b0f19;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #263147;
     }
 
-    .color-pair {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .unit-color-half {
+      width: 50%;
+      height: 100%;
     }
 
-    .color-tag {
-      font-size: 10px;
-      color: #94a3b8;
-      font-weight: 700;
+    .unit-team-name {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 4px;
+      letter-spacing: 1px;
     }
 
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      background: #0b0f19;
-      border: 1px solid #334155;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-weight: 700;
-      text-align: center;
-      font-size: 15px;
-      text-transform: uppercase;
-    }
-
-    input[type="color"] {
-      width: 30px;
-      height: 28px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .btn-same-color {
-      background: #1e293b;
-      color: #94a3b8;
-      font-size: 10px;
-      padding: 5px 6px;
-      border-radius: 5px;
-      font-weight: 700;
-    }
-
-    .score-btn-group {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 8px;
+    .unit-big-score {
+      font-family: 'Barlow Semi Condensed', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      color: #38bdf8;
+      line-height: 1.05;
+      margin: 4px 0 10px 0;
     }
 
     button {
       border: none;
-      border-radius: 8px;
-      padding: 12px 10px;
+      border-radius: 10px;
       font-family: 'Montserrat', sans-serif;
       font-weight: 800;
-      font-size: 14px;
       cursor: pointer;
-      transition: transform 0.08s ease, opacity 0.15s;
+      transition: transform 0.08s ease, filter 0.15s;
     }
 
     button:active {
       transform: scale(0.96);
     }
 
-    .btn-goal {
-      background: #2563eb;
-      color: #ffffff;
-    }
-
-    .btn-minus {
-      background: #334155;
-      color: #cbd5e1;
-    }
-
-    .btn-test-anim {
-      margin-top: 8px;
+    .btn-big-goal {
       width: 100%;
-      background: rgba(37, 99, 235, 0.18);
-      color: #60a5fa;
-      border: 1px solid rgba(96, 165, 250, 0.3);
-      padding: 7px;
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      padding: 15px 8px;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      margin-bottom: 8px;
+    }
+
+    .unit-sub-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .btn-sub {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 8px 4px;
+      font-size: 11px;
+      border: 1px solid #334155;
+    }
+
+    .btn-redcard {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 8px 4px;
       font-size: 11px;
     }
 
-    .btn-start {
+    /* RELOJ EN VIVO */
+    .live-clock-banner {
+      background: #0b0f19;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .clock-digits {
+      font-family: 'Barlow Semi Condensed', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .clock-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    .btn-master-clock {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      margin-bottom: 10px;
       background: #10b981;
       color: #052e16;
     }
 
-    .btn-pause {
+    .btn-master-clock.running {
       background: #f59e0b;
       color: #451a03;
     }
 
-    .btn-secondary {
-      background: #1e293b;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      font-size: 12px;
-      padding: 9px 8px;
-    }
-
-    .timer-controls {
+    .halves-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 6px;
       margin-bottom: 10px;
     }
 
-    .timer-presets {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+    .btn-chip {
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 10px 4px;
+      font-size: 12px;
     }
 
-    .custom-time-row {
+    .btn-chip.active-chip {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    /* CONFIGURACIÓN Y FORMATO DE TIEMPO */
+    .format-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-format {
+      background: #0f172a;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 12px 6px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .btn-format.selected {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #60a5fa;
+    }
+
+    .toggle-row {
       display: flex;
-      gap: 6px;
-      margin-top: 10px;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #2563eb;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .colors-picker-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #090d16;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      margin-top: 8px;
+    }
+
+    input[type="color"] {
+      width: 32px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .penalties-control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .pen-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+      margin-top: 6px;
     }
   </style>
 </head>
 <body class="control-mode">
 
   <!-- ====================================================
-       MARCADOR OFICIAL UEFA CHAMPIONS LEAGUE (2024/2025)
+       MARCADOR OFICIAL EN PANTALLA (OVERLAY Y PREVIEW)
        ==================================================== -->
-  <div class="scoreboard-wrapper" id="scoreboard">
-    <!-- Bloque Izquierdo: Logo.png + Reloj -->
-    <div class="left-block">
-      <div class="ucl-logo-box">
-        <!-- Carga tu archivo logo.png de la carpeta; si no está, muestra el SVG de respaldo -->
-        <img src="logo.png" alt="UCL" class="ucl-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <svg class="ucl-starball-fallback" viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="44" stroke="white" stroke-width="3" opacity="0.3"/>
-          <polygon points="50,9 55,23 70,23 58,32 62,46 50,37 38,46 42,32 30,23 45,23" fill="white"/>
-          <polygon points="18,34 25,45 38,43 29,53 33,66 21,59 10,67 14,53 6,43 18,44" fill="white"/>
-          <polygon points="82,34 82,44 94,43 86,53 90,67 79,59 67,66 71,53 62,43 75,45" fill="white"/>
-          <polygon points="32,88 37,75 27,66 40,66 45,54 50,66 63,66 53,75 58,88 45,80" fill="white"/>
-        </svg>
+  <div class="scoreboard-container" id="scoreboard">
+    <div class="scoreboard-wrapper">
+      
+      <!-- Bloque Izquierdo: Logo + Reloj -->
+      <div class="left-block">
+        <div class="ucl-logo-box">
+          <img src="logo.png" alt="Logo" class="ucl-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <svg class="ucl-starball-fallback" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="44" stroke="white" stroke-width="3" opacity="0.3"/>
+            <polygon points="50,9 55,23 70,23 58,32 62,46 50,37 38,46 42,32 30,23 45,23" fill="white"/>
+            <polygon points="18,34 25,45 38,43 29,53 33,66 21,59 10,67 14,53 6,43 18,44" fill="white"/>
+            <polygon points="82,34 82,44 94,43 86,53 90,67 79,59 67,66 71,53 62,43 75,45" fill="white"/>
+            <polygon points="32,88 37,75 27,66 40,66 45,54 50,66 63,66 53,75 58,88 45,80" fill="white"/>
+          </svg>
+        </div>
+        <div class="timer-box">
+          <span id="displayTimer">00:00</span>
+          <div class="added-time-badge" id="addedBadge">+0</div>
+        </div>
       </div>
-      <div class="timer-box">
-        <span id="displayTimer">00:00</span>
-        <div class="added-time-badge" id="addedBadge">+0</div>
+
+      <div class="spacer"></div>
+
+      <!-- Bloque Derecho: Franja Bicolor + Equipos + Goles + Animación GOAL -->
+      <div class="right-block" id="rightBlock">
+        
+        <div class="team-stripe">
+          <div class="stripe-half" id="homeStripe1" style="background: #a50044;"></div>
+          <div class="stripe-half" id="homeStripe2" style="background: #004d98;"></div>
+        </div>
+
+        <div class="team-box">
+          <div class="red-cards-holder" id="homeRedCards"></div>
+          <div class="team-code" id="displayHomeCode">BAR</div>
+        </div>
+
+        <div class="score-center">
+          <svg class="arc-left" viewBox="0 0 14 38" fill="none">
+            <path d="M2 2C11 11 11 27 2 36" stroke="#3d5afe" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+
+          <div class="score-num" id="displayHomeScore">0</div>
+          <div class="score-divider"></div>
+          <div class="score-num" id="displayAwayScore">0</div>
+
+          <svg class="arc-right" viewBox="0 0 14 38" fill="none">
+            <path d="M12 2C3 11 3 27 12 36" stroke="#3d5afe" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="team-box">
+          <div class="red-cards-holder" id="awayRedCards"></div>
+          <div class="team-code" id="displayAwayCode">AVL</div>
+        </div>
+
+        <div class="team-stripe">
+          <div class="stripe-half" id="awayStripe1" style="background: #95bfe5;"></div>
+          <div class="stripe-half" id="awayStripe2" style="background: #670e36;"></div>
+        </div>
+
+        <!-- CAPA DE ANIMACIÓN DINÁMICA DE GOL (IZQUIERDA A DERECHA) -->
+        <div class="goal-animation-layer" id="goalAnimLayer">
+          <div class="goal-color-wipe">
+            <div class="wipe-bar-top" id="wipeBarTop"></div>
+            <div class="wipe-bar-bottom" id="wipeBarBottom"></div>
+          </div>
+          <div class="goal-text-stage">
+            <div class="goal-word-wrapper">
+              <span class="goal-word-outline">GOAL</span>
+              <span class="goal-word-main">GOAL</span>
+            </div>
+            <div class="goal-scorer-end-stripe">
+              <div class="stripe-half" id="goalEndStripe1"></div>
+              <div class="stripe-half" id="goalEndStripe2"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Separación transparente -->
-    <div class="spacer"></div>
-
-    <!-- Bloque Derecho: Franja Bicolor Local + Equipos + Goles + Franja Bicolor Visita -->
-    <div class="right-block" id="rightBlock">
-      
-      <!-- Franja Bicolor Local (Ej. BAR: Granate arriba / Azul abajo) -->
-      <div class="team-stripe">
-        <div class="stripe-half" id="homeStripe1" style="background: #a50044;"></div>
-        <div class="stripe-half" id="homeStripe2" style="background: #004d98;"></div>
-      </div>
-
-      <div class="team-code" id="displayHomeCode">BAR</div>
-
-      <div class="score-center">
-        <!-- Arco curvo izquierdo -->
-        <svg class="arc-left" viewBox="0 0 14 38" fill="none">
-          <path d="M2 2C11 11 11 27 2 36" stroke="#3d5afe" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-
-        <div class="score-num" id="displayHomeScore">0</div>
-        <div class="score-divider"></div>
-        <div class="score-num" id="displayAwayScore">0</div>
-
-        <!-- Arco curvo derecho -->
-        <svg class="arc-right" viewBox="0 0 14 38" fill="none">
-          <path d="M12 2C3 11 3 27 12 36" stroke="#3d5afe" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </div>
-
-      <div class="team-code" id="displayAwayCode">AVL</div>
-
-      <!-- Franja Bicolor Visitante (Ej. AVL: Celeste arriba / Vino abajo) -->
-      <div class="team-stripe">
-        <div class="stripe-half" id="awayStripe1" style="background: #95bfe5;"></div>
-        <div class="stripe-half" id="awayStripe2" style="background: #670e36;"></div>
-      </div>
-
-      <!-- CAPA DE ANIMACIÓN DINÁMICA DE GOL (IZQUIERDA A DERECHA) -->
-      <div class="goal-animation-layer" id="goalAnimLayer">
-        <!-- Paso 1: Barrido con los 2 colores del equipo que anota -->
-        <div class="goal-color-wipe">
-          <div class="wipe-bar-top" id="wipeBarTop"></div>
-          <div class="wipe-bar-bottom" id="wipeBarBottom"></div>
-        </div>
-        <!-- Paso 2: Cartel GOAL oficial con los colores del anotador a la derecha -->
-        <div class="goal-text-stage">
-          <div class="goal-word-wrapper">
-            <span class="goal-word-outline">GOAL</span>
-            <span class="goal-word-main">GOAL</span>
-          </div>
-          <div class="goal-scorer-end-stripe">
-            <div class="stripe-half" id="goalEndStripe1"></div>
-            <div class="stripe-half" id="goalEndStripe2"></div>
-          </div>
-        </div>
-      </div>
-
+    <!-- Faldón desplegable de Tanda de Penales -->
+    <div class="penalties-drawer" id="penaltiesDrawer">
+      <span>PENALES</span>
+      <div class="pen-team-row" id="penRowHome"></div>
+      <span>-</span>
+      <div class="pen-team-row" id="penRowAway"></div>
     </div>
   </div>
 
   <!-- ====================================================
-       CONSOLA DE CONTROL REMOTO (CELULAR / NAVEGADOR)
+       CONSOLA DE PRODUCCIÓN "LA LIGA" (LAPTOP Y CELULAR)
        ==================================================== -->
   <div class="control-panel" id="controlPanel">
-    <div class="panel-header">
-      <span class="panel-title">Control Champions Live</span>
+    
+    <div class="panel-topbar">
+      <div class="brand-group">
+        <span class="brand-badge">LA LIGA</span>
+        <span class="brand-title">Consola en Vivo</span>
+      </div>
       <span class="status-pill" id="connStatus">Conectando...</span>
     </div>
 
-    <!-- SECCIÓN GOLES, NOMBRES Y 2 COLORES POR EQUIPO -->
-    <div class="section-box">
-      <div class="section-label">Equipos, Doble Color y Goles</div>
-      <div class="teams-grid">
+    <!-- Pestañas para separar la operación rápida de los ajustes -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tabBtnLive" onclick="switchTab('live')">⚽ Controles de Partido</button>
+      <button class="tab-btn" id="tabBtnSetup" onclick="switchTab('setup')">⚙️ Equipos y Tiempos</button>
+    </div>
+
+    <!-- ==========================================
+         VISTA 1: OPERACIÓN EN VIVO (SIMPLE Y RÁPIDA)
+         ========================================== -->
+    <div class="tab-view active" id="viewLive">
+      <div class="live-grid">
         
-        <!-- Tarjeta Local -->
-        <div class="team-card">
-          <div class="input-row">
+        <!-- COLUMNA 1: MARCADOR Y GOLES -->
+        <div>
+          <div class="card-box">
+            <div class="card-header">
+              <span class="card-label">Marcador y Tarjetas</span>
+              <button class="btn-sub" style="padding: 4px 8px;" onclick="swapSides()">⇄ Invertir Lados</button>
+            </div>
+
+            <div class="live-teams-row">
+              <!-- Unidad Local -->
+              <div class="live-team-unit">
+                <div class="unit-color-bar">
+                  <div class="unit-color-half" id="unitHomeC1"></div>
+                  <div class="unit-color-half" id="unitHomeC2"></div>
+                </div>
+                <div class="unit-team-name" id="unitHomeName">BAR</div>
+                <div class="unit-big-score" id="unitHomeScore">0</div>
+                <button class="btn-big-goal" onclick="changeScore('home', 1)">+1 GOL</button>
+                <div class="unit-sub-actions">
+                  <button class="btn-sub" onclick="changeScore('home', -1)">-1 Gol</button>
+                  <button class="btn-redcard" id="btnHomeRed" onclick="cycleRedCard('home')">🟥 0</button>
+                </div>
+              </div>
+
+              <!-- Unidad Visitante -->
+              <div class="live-team-unit">
+                <div class="unit-color-bar">
+                  <div class="unit-color-half" id="unitAwayC1"></div>
+                  <div class="unit-color-half" id="unitAwayC2"></div>
+                </div>
+                <div class="unit-team-name" id="unitAwayName">AVL</div>
+                <div class="unit-big-score" id="unitAwayScore">0</div>
+                <button class="btn-big-goal" onclick="changeScore('away', 1)">+1 GOL</button>
+                <div class="unit-sub-actions">
+                  <button class="btn-sub" onclick="changeScore('away', -1)">-1 Gol</button>
+                  <button class="btn-redcard" id="btnAwayRed" onclick="cycleRedCard('away')">🟥 0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tanda de Penales Rápida -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div class="card-header" style="margin-bottom: 4px;">
+              <span class="card-label">Tanda de Penales</span>
+              <input type="checkbox" id="chkPenalties" onchange="togglePenaltiesMode()">
+            </div>
+            <div id="penaltiesControls" style="display: none;">
+              <div class="penalties-control-grid">
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; text-align:center;" id="penLabelHome">BAR</div>
+                  <div class="pen-btn-row">
+                    <button class="btn-chip" style="color:#4ade80;" onclick="addPenalty('home', 'scored')">✔ Gol</button>
+                    <button class="btn-chip" style="color:#f87171;" onclick="addPenalty('home', 'missed')">✖ Fallo</button>
+                    <button class="btn-chip" onclick="undoPenalty('home')">⌫</button>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; text-align:center;" id="penLabelAway">AVL</div>
+                  <div class="pen-btn-row">
+                    <button class="btn-chip" style="color:#4ade80;" onclick="addPenalty('away', 'scored')">✔ Gol</button>
+                    <button class="btn-chip" style="color:#f87171;" onclick="addPenalty('away', 'missed')">✖ Fallo</button>
+                    <button class="btn-chip" onclick="undoPenalty('away')">⌫</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA 2: CRONÓMETRO INTELIGENTE -->
+        <div>
+          <div class="card-box">
+            <div class="card-header">
+              <span class="card-label">Control de Tiempo</span>
+              <span style="font-size: 11px; color: #38bdf8; font-weight: 800;" id="formatLabelBadge">Formato: 2 x 20'</span>
+            </div>
+
+            <div class="live-clock-banner">
+              <div class="clock-digits" id="panelTimerText">00:00</div>
+              <div class="clock-meta">
+                <div id="clockPeriodLabel">1er Tiempo</div>
+                <div id="autoStopNotice" style="color: #10b981;">Auto-Pausa Activa</div>
+              </div>
+            </div>
+
+            <!-- Botón Maestro único Iniciar / Pausar -->
+            <button class="btn-master-clock" id="btnMasterClock" onclick="toggleMasterClock()">▶ INICIAR RELOJ</button>
+
+            <div class="card-label" style="margin-bottom: 6px;">Saltos de Tiempo Rápidos</div>
+            <div class="halves-grid">
+              <button class="btn-chip" onclick="startPeriod(1)">1T (00:00)</button>
+              <button class="btn-chip" id="btnStart2T" onclick="startPeriod(2)">2T (20:00)</button>
+              <button class="btn-chip" onclick="adjustSeconds(-10)">-10 seg</button>
+              <button class="btn-chip" onclick="adjustSeconds(60)">+1 min</button>
+            </div>
+
+            <div class="card-label" style="margin-bottom: 6px;">Tiempo Añadido (+ Descuento)</div>
+            <div class="halves-grid" style="margin-bottom: 0;">
+              <button class="btn-chip" id="addBtn0" onclick="setAddedTime(0)">Ocultar</button>
+              <button class="btn-chip" id="addBtn1" onclick="setAddedTime(1)">+1'</button>
+              <button class="btn-chip" id="addBtn2" onclick="setAddedTime(2)">+2'</button>
+              <button class="btn-chip" id="addBtn3" onclick="setAddedTime(3)">+3'</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VISTA 2: CONFIGURACIÓN DE EQUIPOS Y TIEMPOS
+         ========================================== -->
+    <div class="tab-view" id="viewSetup">
+      
+      <!-- Formato de Duración de Mitades -->
+      <div class="card-box">
+        <div class="card-label" style="margin-bottom: 8px;">Duración del Partido (Mitades)</div>
+        <div class="format-selector">
+          <button class="btn-format selected" id="fmtBtn20" onclick="setHalfDuration(20)">
+            <strong>2 x 20 min</strong><br><span style="font-size:10px;">La Liga (20' / 40')</span>
+          </button>
+          <button class="btn-format" id="fmtBtn30" onclick="setHalfDuration(30)">
+            <strong>2 x 30 min</strong><br><span style="font-size:10px;">Intermedio (30' / 60')</span>
+          </button>
+          <button class="btn-format" id="fmtBtn45" onclick="setHalfDuration(45)">
+            <strong>2 x 45 min</strong><br><span style="font-size:10px;">Estándar (45' / 90')</span>
+          </button>
+        </div>
+
+        <div class="toggle-row">
+          <span>Detener reloj automáticamente al final de cada tiempo</span>
+          <input type="checkbox" id="chkAutoStop" checked onchange="toggleAutoStop()">
+        </div>
+
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <input type="number" id="customMin" placeholder="Minuto exacto (ej. 14)" min="0" max="150">
+          <input type="number" id="customSec" placeholder="Segundos (0-59)" min="0" max="59">
+          <button class="btn-chip" style="padding: 0 14px; white-space: nowrap;" onclick="applyCustomTime()">Fijar Reloj</button>
+        </div>
+      </div>
+
+      <!-- Personalización de Clubes y Doble Color -->
+      <div class="card-box">
+        <div class="card-label" style="margin-bottom: 10px;">Nombres (3 Letras) y Hasta 2 Colores por Equipo</div>
+        <div class="live-teams-row">
+          
+          <!-- Config Local -->
+          <div class="live-team-unit">
+            <div style="font-size: 11px; color:#94a3b8; margin-bottom:6px; font-weight:700;">EQUIPO LOCAL</div>
             <input type="text" id="inputHomeCode" maxlength="3" value="BAR" onchange="updateTeams()">
-          </div>
-          <div class="colors-row">
-            <div class="color-pair">
-              <span class="color-tag">1</span>
-              <input type="color" id="inputHomeColor1" value="#a50044" onchange="updateTeams()" title="Color Superior">
-              <span class="color-tag">2</span>
-              <input type="color" id="inputHomeColor2" value="#004d98" onchange="updateTeams()" title="Color Inferior">
+            <div class="colors-picker-box">
+              <input type="color" id="inputHomeColor1" value="#a50044" onchange="updateTeams()" title="Color 1">
+              <input type="color" id="inputHomeColor2" value="#004d98" onchange="updateTeams()" title="Color 2">
+              <button class="btn-sub" onclick="unifyColor('home')">1 Color</button>
             </div>
-            <button class="btn-same-color" onclick="unifyColor('home')" title="Usar 1 solo color">1 Color</button>
+            <button class="btn-sub" style="width:100%; margin-top:8px; color:#60a5fa;" onclick="testGoalAnim('home')">✨ Probar Animación Gol</button>
           </div>
-          <div class="score-btn-group">
-            <button class="btn-minus" onclick="changeScore('home', -1)">-1</button>
-            <button class="btn-goal" onclick="changeScore('home', 1)">+1 GOL</button>
-          </div>
-          <button class="btn-test-anim" onclick="testGoalAnim('home')">✨ Probar Animación Local</button>
-        </div>
 
-        <!-- Tarjeta Visitante -->
-        <div class="team-card">
-          <div class="input-row">
+          <!-- Config Visitante -->
+          <div class="live-team-unit">
+            <div style="font-size: 11px; color:#94a3b8; margin-bottom:6px; font-weight:700;">EQUIPO VISITANTE</div>
             <input type="text" id="inputAwayCode" maxlength="3" value="AVL" onchange="updateTeams()">
-          </div>
-          <div class="colors-row">
-            <div class="color-pair">
-              <span class="color-tag">1</span>
-              <input type="color" id="inputAwayColor1" value="#95bfe5" onchange="updateTeams()" title="Color Superior">
-              <span class="color-tag">2</span>
-              <input type="color" id="inputAwayColor2" value="#670e36" onchange="updateTeams()" title="Color Inferior">
+            <div class="colors-picker-box">
+              <input type="color" id="inputAwayColor1" value="#95bfe5" onchange="updateTeams()" title="Color 1">
+              <input type="color" id="inputAwayColor2" value="#670e36" onchange="updateTeams()" title="Color 2">
+              <button class="btn-sub" onclick="unifyColor('away')">1 Color</button>
             </div>
-            <button class="btn-same-color" onclick="unifyColor('away')" title="Usar 1 solo color">1 Color</button>
+            <button class="btn-sub" style="width:100%; margin-top:8px; color:#60a5fa;" onclick="testGoalAnim('away')">✨ Probar Animación Gol</button>
           </div>
-          <div class="score-btn-group">
-            <button class="btn-minus" onclick="changeScore('away', -1)">-1</button>
-            <button class="btn-goal" onclick="changeScore('away', 1)">+1 GOL</button>
-          </div>
-          <button class="btn-test-anim" onclick="testGoalAnim('away')">✨ Probar Animación Visita</button>
+
         </div>
-
       </div>
+
+      <!-- Reinicio General -->
+      <div class="card-box" style="margin-bottom: 0; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size: 13px; font-weight: 800;">Reiniciar para Nuevo Partido</div>
+          <div style="font-size: 11px; color: #94a3b8;">Pone goles, tarjetas, penales y reloj en 00:00</div>
+        </div>
+        <button class="btn-redcard" style="padding: 10px 16px; font-size: 12px;" onclick="resetFullMatch()">↺ Reset Partido</button>
+      </div>
+
     </div>
 
-    <!-- SECCIÓN CRONÓMETRO -->
-    <div class="section-box">
-      <div class="section-label">Cronómetro en Vivo (Sincronizado)</div>
-      <div class="timer-controls">
-        <button class="btn-start" onclick="toggleTimer()">▶ INICIAR</button>
-        <button class="btn-pause" onclick="pauseTimer()">⏸ PAUSAR</button>
-      </div>
-      <div class="timer-presets">
-        <button class="btn-secondary" onclick="setExactTime(0, 0)">00:00</button>
-        <button class="btn-secondary" onclick="setExactTime(45, 0)">45:00</button>
-        <button class="btn-secondary" onclick="setExactTime(90, 0)">90:00</button>
-        <button class="btn-secondary" onclick="addMinute(1)">+1 Min</button>
-      </div>
-      <div class="custom-time-row">
-        <input type="number" id="customMin" placeholder="Min (ej. 51)" min="0" max="150">
-        <input type="number" id="customSec" placeholder="Seg (0-59)" min="0" max="59">
-        <button class="btn-secondary" style="white-space: nowrap;" onclick="applyCustomTime()">Fijar Hora</button>
-      </div>
-    </div>
-
-    <!-- SECCIÓN TIEMPO AÑADIDO -->
-    <div class="section-box" style="margin-bottom: 0;">
-      <div class="section-label">Tiempo Añadido (+ Descuento)</div>
-      <div class="timer-presets">
-        <button class="btn-secondary" onclick="setAddedTime(0)">Ocultar</button>
-        <button class="btn-secondary" onclick="setAddedTime(2)">+2'</button>
-        <button class="btn-secondary" onclick="setAddedTime(4)">+4'</button>
-        <button class="btn-secondary" onclick="setAddedTime(6)">+6'</button>
-      </div>
-    </div>
   </div>
 
   <!-- ====================================================
-       FIREBASE SDK + LÓGICA DE SINCRONIZACIÓN Y ANIMACIÓN
+       FIREBASE SDK + MOTOR DE SINCRONIZACIÓN EN TIEMPO REAL
        ==================================================== -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -742,7 +1095,7 @@
       document.body.classList.add('overlay-mode');
     }
 
-    // 2. CONFIGURACIÓN CONECTADA A TU FIREBASE REALTIME DATABASE
+    // 2. CONEXIÓN A TU PROYECTO FIREBASE REALTIME DATABASE
     const firebaseConfig = {
       databaseURL: "https://marcardor-ucl-default-rtdb.firebaseio.com",
       projectId: "marcardor-ucl"
@@ -757,11 +1110,19 @@
       awayColor2: "#670e36",
       homeScore: 0,
       awayScore: 0,
+      homeRed: 0,
+      awayRed: 0,
       addedTime: 0,
+      halfMinutes: 20,     // Por defecto 2 mitades de 20 minutos para La Liga
+      period: 1,           // 1 = 1er Tiempo, 2 = 2do Tiempo
+      autoStop: true,      // Pausa automática al llegar al límite del tiempo
       isRunning: false,
       baseSeconds: 0,
       startedAt: null,
-      lastGoalEvent: null // Guarda { team: 'home'|'away', id: timestamp } para disparar la transición
+      showPenalties: false,
+      penHome: [],
+      penAway: [],
+      lastGoalEvent: null
     };
 
     let lastProcessedGoalId = null;
@@ -769,29 +1130,31 @@
     let isFirstLoad = true;
 
     firebase.initializeApp(firebaseConfig);
-    const dbRef = firebase.database().ref('ucl_match_v2');
+    const dbRef = firebase.database().ref('laliga_match_v1');
     const statusEl = document.getElementById('connStatus');
 
     dbRef.on('value', (snapshot) => {
       const remote = snapshot.val();
       if (remote) {
         const incomingGoal = remote.lastGoalEvent;
+        state = {
+          ...state,
+          ...remote,
+          penHome: remote.penHome || [],
+          penAway: remote.penAway || []
+        };
 
         if (isFirstLoad) {
           if (incomingGoal && incomingGoal.id) {
             lastProcessedGoalId = incomingGoal.id;
           }
-          state = { ...state, ...remote };
           renderUI(true);
           isFirstLoad = false;
         } else {
-          // ¿Se disparó una nueva animación de gol desde el celular o panel?
           if (incomingGoal && incomingGoal.id && incomingGoal.id !== lastProcessedGoalId) {
             lastProcessedGoalId = incomingGoal.id;
-            state = { ...state, ...remote };
             playGoalTransition(incomingGoal.team);
           } else {
-            state = { ...state, ...remote };
             renderUI(true);
           }
         }
@@ -799,7 +1162,7 @@
         dbRef.set(state);
         isFirstLoad = false;
       }
-      statusEl.textContent = "En Vivo (Firebase)";
+      statusEl.textContent = "En Vivo (Sincronizado)";
       statusEl.classList.add('online');
     });
 
@@ -807,7 +1170,15 @@
       dbRef.set(state);
     }
 
-    // 3. FUNCIONES DE EQUIPOS, COLORES Y GOLES
+    // 3. NAVEGACIÓN DE PESTAÑAS DEL PANEL
+    function switchTab(tab) {
+      document.getElementById('tabBtnLive').classList.toggle('active', tab === 'live');
+      document.getElementById('tabBtnSetup').classList.toggle('active', tab === 'setup');
+      document.getElementById('viewLive').classList.toggle('active', tab === 'live');
+      document.getElementById('viewSetup').classList.toggle('active', tab === 'setup');
+    }
+
+    // 4. GESTIÓN DE EQUIPOS, GOLES, TARJETAS Y PENALES
     function updateTeams() {
       state.homeCode = document.getElementById('inputHomeCode').value.toUpperCase() || "LOC";
       state.awayCode = document.getElementById('inputAwayCode').value.toUpperCase() || "VIS";
@@ -821,13 +1192,20 @@
 
     function unifyColor(team) {
       if (team === 'home') {
-        const c1 = document.getElementById('inputHomeColor1').value;
-        document.getElementById('inputHomeColor2').value = c1;
+        document.getElementById('inputHomeColor2').value = document.getElementById('inputHomeColor1').value;
       } else {
-        const c1 = document.getElementById('inputAwayColor1').value;
-        document.getElementById('inputAwayColor2').value = c1;
+        document.getElementById('inputAwayColor2').value = document.getElementById('inputAwayColor1').value;
       }
       updateTeams();
+    }
+
+    function swapSides() {
+      const tempCode = state.homeCode; state.homeCode = state.awayCode; state.awayCode = tempCode;
+      const tempC1 = state.homeColor1; state.homeColor1 = state.awayColor1; state.awayColor1 = tempC1;
+      const tempC2 = state.homeColor2; state.homeColor2 = state.awayColor2; state.awayColor2 = tempC2;
+      const tempScore = state.homeScore; state.homeScore = state.awayScore; state.awayScore = tempScore;
+      const tempRed = state.homeRed; state.homeRed = state.awayRed; state.awayRed = tempRed;
+      pushState();
     }
 
     function changeScore(team, delta) {
@@ -836,29 +1214,51 @@
       } else {
         state.awayScore = Math.max(0, state.awayScore + delta);
       }
-
-      // Si es +1 GOL, enviamos el evento de transición dinámica
       if (delta > 0) {
-        state.lastGoalEvent = {
-          team: team,
-          id: Date.now()
-        };
+        state.lastGoalEvent = { team: team, id: Date.now() };
+      }
+      pushState();
+    }
+
+    function cycleRedCard(team) {
+      if (team === 'home') {
+        state.homeRed = (state.homeRed + 1) % 4;
+      } else {
+        state.awayRed = (state.awayRed + 1) % 4;
+      }
+      pushState();
+    }
+
+    function togglePenaltiesMode() {
+      state.showPenalties = document.getElementById('chkPenalties').checked;
+      pushState();
+    }
+
+    function addPenalty(team, status) {
+      if (team === 'home') {
+        state.penHome = [...(state.penHome || []), status];
+      } else {
+        state.penAway = [...(state.penAway || []), status];
+      }
+      pushState();
+    }
+
+    function undoPenalty(team) {
+      if (team === 'home' && state.penHome && state.penHome.length > 0) {
+        state.penHome.pop();
+      } else if (team === 'away' && state.penAway && state.penAway.length > 0) {
+        state.penAway.pop();
       }
       pushState();
     }
 
     function testGoalAnim(team) {
-      state.lastGoalEvent = {
-        team: team,
-        id: Date.now()
-      };
+      state.lastGoalEvent = { team: team, id: Date.now() };
       pushState();
     }
 
-    // 4. SECUENCIA DE ANIMACIÓN DE GOL (IZQUIERDA A DERECHA)
+    // 5. ANIMACIÓN OFICIAL DE GOL (BARRIDO BICOLOR IZQ -> DER)
     function playGoalTransition(scoringTeam) {
-      // Actualizar nombres y colores de inmediato, pero retener el cambio del número 900ms
-      // hasta que la cortina bicolor haya cubierto el marcador por completo
       renderUI(false);
 
       const c1 = scoringTeam === 'home' ? state.homeColor1 : state.awayColor1;
@@ -871,53 +1271,80 @@
 
       const animLayer = document.getElementById('goalAnimLayer');
       animLayer.classList.remove('active');
-      void animLayer.offsetWidth; // Forzar reflow para reiniciar animación CSS
+      void animLayer.offsetWidth;
       animLayer.classList.add('active');
 
-      // Cuando la cortina ya tapó los números (1.1s), actualizamos el dígito detrás del telón
       if (scoreRevealTimeout) clearTimeout(scoreRevealTimeout);
       scoreRevealTimeout = setTimeout(() => {
         document.getElementById('displayHomeScore').textContent = state.homeScore;
         document.getElementById('displayAwayScore').textContent = state.awayScore;
+        document.getElementById('unitHomeScore').textContent = state.homeScore;
+        document.getElementById('unitAwayScore').textContent = state.awayScore;
       }, 1100);
     }
 
-    // 5. CRONÓMETRO BASADO EN TIMESTAMPS
+    // 6. MOTOR DE TIEMPO CONFIGURABLE (2x20, 2x30, 2x45) Y AUTO-PAUSA
     function getCurrentTotalSeconds() {
       if (!state.isRunning || !state.startedAt) {
         return state.baseSeconds;
       }
       const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
-      return state.baseSeconds + Math.max(0, elapsed);
-    }
+      let current = state.baseSeconds + Math.max(0, elapsed);
 
-    function toggleTimer() {
-      if (!state.isRunning) {
-        state.isRunning = true;
-        state.startedAt = Date.now();
-        pushState();
+      // Verificar Auto-Pausa al final de cada mitad
+      if (state.autoStop && state.addedTime === 0) {
+        const limitSeconds = state.period === 1
+          ? state.halfMinutes * 60
+          : state.halfMinutes * 2 * 60;
+
+        if (current >= limitSeconds) {
+          current = limitSeconds;
+          // Detener automáticamente si estamos en un controlador activo
+          if (!document.body.classList.contains('overlay-mode')) {
+            state.baseSeconds = limitSeconds;
+            state.isRunning = false;
+            state.startedAt = null;
+            pushState();
+          }
+        }
       }
+      return current;
     }
 
-    function pauseTimer() {
+    function toggleMasterClock() {
       if (state.isRunning) {
         state.baseSeconds = getCurrentTotalSeconds();
         state.isRunning = false;
         state.startedAt = null;
-        pushState();
+      } else {
+        state.isRunning = true;
+        state.startedAt = Date.now();
       }
+      pushState();
     }
 
-    function setExactTime(minutes, seconds) {
-      state.baseSeconds = (minutes * 60) + seconds;
+    function setHalfDuration(mins) {
+      state.halfMinutes = mins;
+      pushState();
+    }
+
+    function toggleAutoStop() {
+      state.autoStop = document.getElementById('chkAutoStop').checked;
+      pushState();
+    }
+
+    function startPeriod(periodNum) {
+      state.period = periodNum;
+      state.addedTime = 0;
+      state.baseSeconds = periodNum === 1 ? 0 : state.halfMinutes * 60;
       if (state.isRunning) {
         state.startedAt = Date.now();
       }
       pushState();
     }
 
-    function addMinute(mins) {
-      state.baseSeconds = Math.max(0, getCurrentTotalSeconds() + (mins * 60));
+    function adjustSeconds(deltaSec) {
+      state.baseSeconds = Math.max(0, getCurrentTotalSeconds() + deltaSec);
       if (state.isRunning) {
         state.startedAt = Date.now();
       }
@@ -927,7 +1354,13 @@
     function applyCustomTime() {
       const m = parseInt(document.getElementById('customMin').value) || 0;
       const s = parseInt(document.getElementById('customSec').value) || 0;
-      setExactTime(m, s);
+      state.baseSeconds = (m * 60) + s;
+      state.period = m >= state.halfMinutes ? 2 : 1;
+      if (state.isRunning) {
+        state.startedAt = Date.now();
+      }
+      pushState();
+      switchTab('live');
     }
 
     function setAddedTime(mins) {
@@ -935,39 +1368,125 @@
       pushState();
     }
 
-    // 6. RENDERIZADO VISUAL
+    function resetFullMatch() {
+      state.homeScore = 0;
+      state.awayScore = 0;
+      state.homeRed = 0;
+      state.awayRed = 0;
+      state.addedTime = 0;
+      state.period = 1;
+      state.isRunning = false;
+      state.baseSeconds = 0;
+      state.startedAt = null;
+      state.showPenalties = false;
+      state.penHome = [];
+      state.penAway = [];
+      pushState();
+      switchTab('live');
+    }
+
+    // 7. RENDERIZADO VISUAL EN PANTALLA Y PANEL
     function formatMMSS(totalSeconds) {
       const m = Math.floor(totalSeconds / 60);
       const s = totalSeconds % 60;
       return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }
 
+    function renderRedCards(containerId, count) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const card = document.createElement('div');
+        card.className = 'red-card-icon';
+        el.appendChild(card);
+      }
+    }
+
+    function renderPenaltyDots(containerId, list) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      const totalSlots = Math.max(5, list.length);
+      for (let i = 0; i < totalSlots; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'pen-dot ' + (list[i] || '');
+        el.appendChild(dot);
+      }
+    }
+
     function renderUI(updateScoresImmediately = true) {
+      // Nombres y colores en el Scoreboard
       document.getElementById('displayHomeCode').textContent = state.homeCode;
       document.getElementById('displayAwayCode').textContent = state.awayCode;
-
       document.getElementById('homeStripe1').style.background = state.homeColor1;
       document.getElementById('homeStripe2').style.background = state.homeColor2;
       document.getElementById('awayStripe1').style.background = state.awayColor1;
       document.getElementById('awayStripe2').style.background = state.awayColor2;
 
+      // Nombres y colores en las tarjetas del Panel en Vivo
+      document.getElementById('unitHomeName').textContent = state.homeCode;
+      document.getElementById('unitAwayName').textContent = state.awayCode;
+      document.getElementById('unitHomeC1').style.background = state.homeColor1;
+      document.getElementById('unitHomeC2').style.background = state.homeColor2;
+      document.getElementById('unitAwayC1').style.background = state.awayColor1;
+      document.getElementById('unitAwayC2').style.background = state.awayColor2;
+
       if (updateScoresImmediately) {
         document.getElementById('displayHomeScore').textContent = state.homeScore;
         document.getElementById('displayAwayScore').textContent = state.awayScore;
+        document.getElementById('unitHomeScore').textContent = state.homeScore;
+        document.getElementById('unitAwayScore').textContent = state.awayScore;
       }
 
-      if (document.activeElement.id !== 'inputHomeCode') {
-        document.getElementById('inputHomeCode').value = state.homeCode;
-      }
-      if (document.activeElement.id !== 'inputAwayCode') {
-        document.getElementById('inputAwayCode').value = state.awayCode;
+      // Tarjetas Rojas
+      renderRedCards('homeRedCards', state.homeRed || 0);
+      renderRedCards('awayRedCards', state.awayRed || 0);
+      document.getElementById('btnHomeRed').textContent = `🟥 ${state.homeRed || 0}`;
+      document.getElementById('btnAwayRed').textContent = `🟥 ${state.awayRed || 0}`;
+
+      // Tanda de Penales
+      document.getElementById('chkPenalties').checked = !!state.showPenalties;
+      document.getElementById('penaltiesControls').style.display = state.showPenalties ? 'block' : 'none';
+      document.getElementById('penaltiesDrawer').classList.toggle('active', !!state.showPenalties);
+      document.getElementById('penLabelHome').textContent = state.homeCode;
+      document.getElementById('penLabelAway').textContent = state.awayCode;
+      renderPenaltyDots('penRowHome', state.penHome || []);
+      renderPenaltyDots('penRowAway', state.penAway || []);
+
+      // Botón Maestro de Reloj
+      const masterBtn = document.getElementById('btnMasterClock');
+      if (state.isRunning) {
+        masterBtn.textContent = "⏸ PAUSAR RELOJ";
+        masterBtn.classList.add('running');
+      } else {
+        masterBtn.textContent = "▶ INICIAR RELOJ";
+        masterBtn.classList.remove('running');
       }
 
+      // Configuración de tiempos (20, 30, 45)
+      document.getElementById('formatLabelBadge').textContent = `Formato: 2 x ${state.halfMinutes}'`;
+      document.getElementById('btnStart2T').textContent = `2T (${state.halfMinutes}:00)`;
+      document.getElementById('clockPeriodLabel').textContent = state.period === 2 ? '2do Tiempo' : '1er Tiempo';
+      document.getElementById('autoStopNotice').textContent = state.autoStop ? 'Auto-Pausa Activa' : 'Reloj Continuo';
+      document.getElementById('chkAutoStop').checked = !!state.autoStop;
+
+      [20, 30, 45].forEach(m => {
+        document.getElementById('fmtBtn' + m).classList.toggle('selected', state.halfMinutes === m);
+      });
+
+      [0, 1, 2, 3].forEach(a => {
+        const btn = document.getElementById('addBtn' + a);
+        if (btn) btn.classList.toggle('active-chip', state.addedTime === a);
+      });
+
+      // Inputs de configuración
+      if (document.activeElement.id !== 'inputHomeCode') document.getElementById('inputHomeCode').value = state.homeCode;
+      if (document.activeElement.id !== 'inputAwayCode') document.getElementById('inputAwayCode').value = state.awayCode;
       document.getElementById('inputHomeColor1').value = state.homeColor1;
       document.getElementById('inputHomeColor2').value = state.homeColor2;
       document.getElementById('inputAwayColor1').value = state.awayColor1;
       document.getElementById('inputAwayColor2').value = state.awayColor2;
 
+      // Badge de tiempo añadido
       const badge = document.getElementById('addedBadge');
       if (state.addedTime > 0) {
         badge.textContent = '+' + state.addedTime;
@@ -976,13 +1495,16 @@
         badge.classList.remove('active');
       }
 
-      document.getElementById('displayTimer').textContent = formatMMSS(getCurrentTotalSeconds());
+      updateTimerText();
     }
 
-    setInterval(() => {
-      document.getElementById('displayTimer').textContent = formatMMSS(getCurrentTotalSeconds());
-    }, 250);
+    function updateTimerText() {
+      const formatted = formatMMSS(getCurrentTotalSeconds());
+      document.getElementById('displayTimer').textContent = formatted;
+      document.getElementById('panelTimerText').textContent = formatted;
+    }
 
+    setInterval(updateTimerText, 250);
     renderUI(true);
   </script>
 </body>
