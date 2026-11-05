@@ -182,7 +182,6 @@
       text-transform: uppercase;
     }
 
-    /* Indicadores de Tarjetas Rojas encima de cada equipo */
     .red-cards-holder {
       position: absolute;
       top: -11px;
@@ -392,7 +391,7 @@
        CONSOLA DE CONTROL "LA LIGA" (MOBILE & PC)
        ========================================== */
     .control-panel {
-      max-width: 780px;
+      max-width: 820px;
       margin: 120px auto 20px auto;
       background: #111827;
       border: 1px solid #1f2937;
@@ -460,23 +459,66 @@
       border: 1px solid rgba(52, 211, 153, 0.35);
     }
 
-    /* PESTAÑAS DE MODO (EN VIVO vs CONFIGURAR) */
+    /* BARRA DE CAMBIO RÁPIDO DE PARTIDO */
+    .quick-fixture-bar {
+      background: #0f172a;
+      border: 1px solid #28354f;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .quick-fixture-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+    }
+
+    .quick-fixture-actions {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    select {
+      flex: 1;
+      background: #090d16;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* PESTAÑAS DE MODO */
     .nav-tabs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       background: #0b0f19;
       padding: 4px;
       border-radius: 12px;
       margin-bottom: 16px;
       border: 1px solid #1f2937;
+      gap: 4px;
     }
 
     .tab-btn {
       background: transparent;
       color: #9ca3af;
-      padding: 10px;
+      padding: 10px 6px;
       border-radius: 9px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       border: none;
       cursor: pointer;
@@ -611,7 +653,7 @@
     .btn-sub {
       background: #1e293b;
       color: #cbd5e1;
-      padding: 8px 4px;
+      padding: 8px 6px;
       font-size: 11px;
       border: 1px solid #334155;
     }
@@ -620,7 +662,7 @@
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
       border: 1px solid rgba(239, 68, 68, 0.35);
-      padding: 8px 4px;
+      padding: 8px 6px;
       font-size: 11px;
     }
 
@@ -772,6 +814,71 @@
       gap: 4px;
       margin-top: 6px;
     }
+
+    /* LISTA DE PARTIDOS GUARDADOS (FIXTURES) */
+    .fixtures-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .fixture-item {
+      background: #0f172a;
+      border: 1px solid #26334d;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fixture-teams-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .mini-swatch {
+      width: 10px;
+      height: 22px;
+      border-radius: 2px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .mini-swatch div {
+      width: 100%;
+      height: 50%;
+    }
+
+    .fixture-meta-tag {
+      font-size: 11px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .fixture-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-load-match {
+      background: #2563eb;
+      color: #fff;
+      padding: 7px 12px;
+      font-size: 11px;
+      border-radius: 7px;
+    }
   </style>
 </head>
 <body class="control-mode">
@@ -882,10 +989,20 @@
       <span class="status-pill" id="connStatus">Conectando...</span>
     </div>
 
-    <!-- Pestañas para separar la operación rápida de los ajustes -->
+    <!-- BARRA DE CAMBIO RÁPIDO DE PARTIDO PROGRAMADO -->
+    <div class="quick-fixture-bar">
+      <span class="quick-fixture-label">📋 Cambio Rápido:</span>
+      <div class="quick-fixture-actions">
+        <select id="quickFixtureSelect"></select>
+        <button class="btn-load-match" onclick="loadSelectedFixture()">Cargar Partido</button>
+      </div>
+    </div>
+
+    <!-- Pestañas de navegación -->
     <div class="nav-tabs">
-      <button class="tab-btn active" id="tabBtnLive" onclick="switchTab('live')">⚽ Controles de Partido</button>
-      <button class="tab-btn" id="tabBtnSetup" onclick="switchTab('setup')">⚙️ Equipos y Tiempos</button>
+      <button class="tab-btn active" id="tabBtnLive" onclick="switchTab('live')">⚽ En Vivo</button>
+      <button class="tab-btn" id="tabBtnFixtures" onclick="switchTab('fixtures')">📋 Partidos (<span id="fixtureCountBadge">0</span>)</button>
+      <button class="tab-btn" id="tabBtnSetup" onclick="switchTab('setup')">⚙️ Ajustes</button>
     </div>
 
     <!-- ==========================================
@@ -980,7 +1097,6 @@
               </div>
             </div>
 
-            <!-- Botón Maestro único Iniciar / Pausar -->
             <button class="btn-master-clock" id="btnMasterClock" onclick="toggleMasterClock()">▶ INICIAR RELOJ</button>
 
             <div class="card-label" style="margin-bottom: 6px;">Saltos de Tiempo Rápidos</div>
@@ -1005,13 +1121,67 @@
     </div>
 
     <!-- ==========================================
-         VISTA 2: CONFIGURACIÓN DE EQUIPOS Y TIEMPOS
+         VISTA 2: PARTIDOS PROGRAMADOS (FIXTURES)
+         ========================================== -->
+    <div class="tab-view" id="viewFixtures">
+      
+      <!-- Crear / Guardar nuevo partido en la lista -->
+      <div class="card-box">
+        <div class="card-header">
+          <span class="card-label">Agregar Partido a la Programación</span>
+          <button class="btn-sub" onclick="saveCurrentAsFixture()">+ Guardar Equipos Actuales</button>
+        </div>
+
+        <div class="live-teams-row" style="margin-bottom: 10px;">
+          <!-- Nuevo Local -->
+          <div class="live-team-unit">
+            <div style="font-size: 10px; color:#94a3b8; margin-bottom:4px; font-weight:700;">LOCAL (3 LETRAS)</div>
+            <input type="text" id="newFixHomeCode" maxlength="3" placeholder="Ej. RMA" value="RMA">
+            <div class="colors-picker-box">
+              <input type="color" id="newFixHomeC1" value="#ffffff">
+              <input type="color" id="newFixHomeC2" value="#ffffff">
+              <button class="btn-sub" onclick="document.getElementById('newFixHomeC2').value = document.getElementById('newFixHomeC1').value">1 Color</button>
+            </div>
+          </div>
+
+          <!-- Nuevo Visitante -->
+          <div class="live-team-unit">
+            <div style="font-size: 10px; color:#94a3b8; margin-bottom:4px; font-weight:700;">VISITA (3 LETRAS)</div>
+            <input type="text" id="newFixAwayCode" maxlength="3" placeholder="Ej. STU" value="STU">
+            <div class="colors-picker-box">
+              <input type="color" id="newFixAwayC1" value="#e52521">
+              <input type="color" id="newFixAwayC2" value="#e52521">
+              <button class="btn-sub" onclick="document.getElementById('newFixAwayC2').value = document.getElementById('newFixAwayC1').value">1 Color</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="newFixLabel" placeholder="Etiqueta opcional (ej. Cancha 1 - 4:00 PM)" style="text-transform: none; text-align: left; flex: 1;">
+          <select id="newFixHalfMins" style="max-width: 130px;">
+            <option value="20" selected>2 x 20 min</option>
+            <option value="30">2 x 30 min</option>
+            <option value="45">2 x 45 min</option>
+          </select>
+          <button class="btn-load-match" style="padding: 10px 16px; white-space: nowrap;" onclick="addNewFixture()">➕ Guardar en Lista</button>
+        </div>
+      </div>
+
+      <!-- Lista de partidos listos para cargar en un clic -->
+      <div class="card-box" style="margin-bottom: 0;">
+        <div class="card-label">Partidos Guardados (Listos para salir al aire)</div>
+        <div class="fixtures-list" id="fixturesListContainer"></div>
+      </div>
+
+    </div>
+
+    <!-- ==========================================
+         VISTA 3: CONFIGURACIÓN DE EQUIPOS Y TIEMPOS
          ========================================== -->
     <div class="tab-view" id="viewSetup">
       
-      <!-- Formato de Duración de Mitades -->
       <div class="card-box">
-        <div class="card-label" style="margin-bottom: 8px;">Duración del Partido (Mitades)</div>
+        <div class="card-label" style="margin-bottom: 8px;">Duración del Partido en Curso (Mitades)</div>
         <div class="format-selector">
           <button class="btn-format selected" id="fmtBtn20" onclick="setHalfDuration(20)">
             <strong>2 x 20 min</strong><br><span style="font-size:10px;">La Liga (20' / 40')</span>
@@ -1036,12 +1206,11 @@
         </div>
       </div>
 
-      <!-- Personalización de Clubes y Doble Color -->
+      <!-- Edición directa del partido activo -->
       <div class="card-box">
-        <div class="card-label" style="margin-bottom: 10px;">Nombres (3 Letras) y Hasta 2 Colores por Equipo</div>
+        <div class="card-label" style="margin-bottom: 10px;">Editar Equipos Activos Ahora Mismo</div>
         <div class="live-teams-row">
           
-          <!-- Config Local -->
           <div class="live-team-unit">
             <div style="font-size: 11px; color:#94a3b8; margin-bottom:6px; font-weight:700;">EQUIPO LOCAL</div>
             <input type="text" id="inputHomeCode" maxlength="3" value="BAR" onchange="updateTeams()">
@@ -1053,7 +1222,6 @@
             <button class="btn-sub" style="width:100%; margin-top:8px; color:#60a5fa;" onclick="testGoalAnim('home')">✨ Probar Animación Gol</button>
           </div>
 
-          <!-- Config Visitante -->
           <div class="live-team-unit">
             <div style="font-size: 11px; color:#94a3b8; margin-bottom:6px; font-weight:700;">EQUIPO VISITANTE</div>
             <input type="text" id="inputAwayCode" maxlength="3" value="AVL" onchange="updateTeams()">
@@ -1071,10 +1239,10 @@
       <!-- Reinicio General -->
       <div class="card-box" style="margin-bottom: 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size: 13px; font-weight: 800;">Reiniciar para Nuevo Partido</div>
-          <div style="font-size: 11px; color: #94a3b8;">Pone goles, tarjetas, penales y reloj en 00:00</div>
+          <div style="font-size: 13px; font-weight: 800;">Reiniciar Marcador Actual</div>
+          <div style="font-size: 11px; color: #94a3b8;">Pone goles, tarjetas, penales y reloj en 00:00 manteniendo los equipos</div>
         </div>
-        <button class="btn-redcard" style="padding: 10px 16px; font-size: 12px;" onclick="resetFullMatch()">↺ Reset Partido</button>
+        <button class="btn-redcard" style="padding: 10px 16px; font-size: 12px;" onclick="resetFullMatch()">↺ Reset 0-0</button>
       </div>
 
     </div>
@@ -1101,6 +1269,31 @@
       projectId: "marcardor-ucl"
     };
 
+    // Partidos preconfigurados de ejemplo por si la lista está vacía
+    const defaultFixtures = [
+      {
+        id: "fix_1",
+        label: "Partido 1",
+        homeCode: "BAR", homeColor1: "#a50044", homeColor2: "#004d98",
+        awayCode: "AVL", awayColor1: "#95bfe5", awayColor2: "#670e36",
+        halfMinutes: 20
+      },
+      {
+        id: "fix_2",
+        label: "Partido 2",
+        homeCode: "RMA", homeColor1: "#ffffff", homeColor2: "#ffffff",
+        awayCode: "STU", awayColor1: "#e52521", awayColor2: "#e52521",
+        halfMinutes: 20
+      },
+      {
+        id: "fix_3",
+        label: "Partido 3",
+        homeCode: "MCI", homeColor1: "#6cabdd", homeColor2: "#1c2c5b",
+        awayCode: "INT", awayColor1: "#010e80", awayColor2: "#000000",
+        halfMinutes: 20
+      }
+    ];
+
     let state = {
       homeCode: "BAR",
       awayCode: "AVL",
@@ -1113,15 +1306,16 @@
       homeRed: 0,
       awayRed: 0,
       addedTime: 0,
-      halfMinutes: 20,     // Por defecto 2 mitades de 20 minutos para La Liga
-      period: 1,           // 1 = 1er Tiempo, 2 = 2do Tiempo
-      autoStop: true,      // Pausa automática al llegar al límite del tiempo
+      halfMinutes: 20,
+      period: 1,
+      autoStop: true,
       isRunning: false,
       baseSeconds: 0,
       startedAt: null,
       showPenalties: false,
       penHome: [],
       penAway: [],
+      fixtures: defaultFixtures,
       lastGoalEvent: null
     };
 
@@ -1141,7 +1335,8 @@
           ...state,
           ...remote,
           penHome: remote.penHome || [],
-          penAway: remote.penAway || []
+          penAway: remote.penAway || [],
+          fixtures: remote.fixtures || defaultFixtures
         };
 
         if (isFirstLoad) {
@@ -1173,12 +1368,101 @@
     // 3. NAVEGACIÓN DE PESTAÑAS DEL PANEL
     function switchTab(tab) {
       document.getElementById('tabBtnLive').classList.toggle('active', tab === 'live');
+      document.getElementById('tabBtnFixtures').classList.toggle('active', tab === 'fixtures');
       document.getElementById('tabBtnSetup').classList.toggle('active', tab === 'setup');
+
       document.getElementById('viewLive').classList.toggle('active', tab === 'live');
+      document.getElementById('viewFixtures').classList.toggle('active', tab === 'fixtures');
       document.getElementById('viewSetup').classList.toggle('active', tab === 'setup');
     }
 
-    // 4. GESTIÓN DE EQUIPOS, GOLES, TARJETAS Y PENALES
+    // 4. GESTIÓN DE PARTIDOS PROGRAMADOS (FIXTURES)
+    function addNewFixture() {
+      const hCode = (document.getElementById('newFixHomeCode').value || "LOC").toUpperCase().slice(0, 3);
+      const aCode = (document.getElementById('newFixAwayCode').value || "VIS").toUpperCase().slice(0, 3);
+      const hC1 = document.getElementById('newFixHomeC1').value;
+      const hC2 = document.getElementById('newFixHomeC2').value;
+      const aC1 = document.getElementById('newFixAwayC1').value;
+      const aC2 = document.getElementById('newFixAwayC2').value;
+      const label = document.getElementById('newFixLabel').value.trim() || `Partido ${(state.fixtures || []).length + 1}`;
+      const mins = parseInt(document.getElementById('newFixHalfMins').value) || 20;
+
+      const newFix = {
+        id: 'fix_' + Date.now(),
+        label: label,
+        homeCode: hCode,
+        homeColor1: hC1,
+        homeColor2: hC2,
+        awayCode: aCode,
+        awayColor1: aC1,
+        awayColor2: aC2,
+        halfMinutes: mins
+      };
+
+      state.fixtures = [...(state.fixtures || []), newFix];
+      document.getElementById('newFixLabel').value = '';
+      pushState();
+    }
+
+    function saveCurrentAsFixture() {
+      const newFix = {
+        id: 'fix_' + Date.now(),
+        label: `Partido ${(state.fixtures || []).length + 1}`,
+        homeCode: state.homeCode,
+        homeColor1: state.homeColor1,
+        homeColor2: state.homeColor2,
+        awayCode: state.awayCode,
+        awayColor1: state.awayColor1,
+        awayColor2: state.awayColor2,
+        halfMinutes: state.halfMinutes || 20
+      };
+      state.fixtures = [...(state.fixtures || []), newFix];
+      pushState();
+    }
+
+    function loadFixtureById(fixId) {
+      const found = (state.fixtures || []).find(f => f.id === fixId);
+      if (!found) return;
+
+      // Cargar equipos, colores, formato y reiniciar el marcador a 0-0 listo para jugar
+      state.homeCode = found.homeCode;
+      state.homeColor1 = found.homeColor1;
+      state.homeColor2 = found.homeColor2;
+      state.awayCode = found.awayCode;
+      state.awayColor1 = found.awayColor1;
+      state.awayColor2 = found.awayColor2;
+      state.halfMinutes = found.halfMinutes || 20;
+
+      state.homeScore = 0;
+      state.awayScore = 0;
+      state.homeRed = 0;
+      state.awayRed = 0;
+      state.addedTime = 0;
+      state.period = 1;
+      state.isRunning = false;
+      state.baseSeconds = 0;
+      state.startedAt = null;
+      state.showPenalties = false;
+      state.penHome = [];
+      state.penAway = [];
+
+      pushState();
+      switchTab('live');
+    }
+
+    function loadSelectedFixture() {
+      const sel = document.getElementById('quickFixtureSelect');
+      if (sel && sel.value) {
+        loadFixtureById(sel.value);
+      }
+    }
+
+    function deleteFixtureById(fixId) {
+      state.fixtures = (state.fixtures || []).filter(f => f.id !== fixId);
+      pushState();
+    }
+
+    // 5. GESTIÓN DE EQUIPOS, GOLES, TARJETAS Y PENALES
     function updateTeams() {
       state.homeCode = document.getElementById('inputHomeCode').value.toUpperCase() || "LOC";
       state.awayCode = document.getElementById('inputAwayCode').value.toUpperCase() || "VIS";
@@ -1257,7 +1541,7 @@
       pushState();
     }
 
-    // 5. ANIMACIÓN OFICIAL DE GOL (BARRIDO BICOLOR IZQ -> DER)
+    // 6. ANIMACIÓN OFICIAL DE GOL (BARRIDO BICOLOR IZQ -> DER)
     function playGoalTransition(scoringTeam) {
       renderUI(false);
 
@@ -1283,7 +1567,7 @@
       }, 1100);
     }
 
-    // 6. MOTOR DE TIEMPO CONFIGURABLE (2x20, 2x30, 2x45) Y AUTO-PAUSA
+    // 7. MOTOR DE TIEMPO CONFIGURABLE (2x20, 2x30, 2x45) Y AUTO-PAUSA
     function getCurrentTotalSeconds() {
       if (!state.isRunning || !state.startedAt) {
         return state.baseSeconds;
@@ -1291,7 +1575,6 @@
       const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
       let current = state.baseSeconds + Math.max(0, elapsed);
 
-      // Verificar Auto-Pausa al final de cada mitad
       if (state.autoStop && state.addedTime === 0) {
         const limitSeconds = state.period === 1
           ? state.halfMinutes * 60
@@ -1299,7 +1582,6 @@
 
         if (current >= limitSeconds) {
           current = limitSeconds;
-          // Detener automáticamente si estamos en un controlador activo
           if (!document.body.classList.contains('overlay-mode')) {
             state.baseSeconds = limitSeconds;
             state.isRunning = false;
@@ -1385,7 +1667,7 @@
       switchTab('live');
     }
 
-    // 7. RENDERIZADO VISUAL EN PANTALLA Y PANEL
+    // 8. RENDERIZADO VISUAL EN PANTALLA Y PANEL
     function formatMMSS(totalSeconds) {
       const m = Math.floor(totalSeconds / 60);
       const s = totalSeconds % 60;
@@ -1413,8 +1695,55 @@
       }
     }
 
+    function renderFixturesList() {
+      const list = state.fixtures || [];
+      document.getElementById('fixtureCountBadge').textContent = list.length;
+
+      // Renderizar selector rápido superior
+      const selectEl = document.getElementById('quickFixtureSelect');
+      const prevVal = selectEl.value;
+      selectEl.innerHTML = '';
+      list.forEach((f, idx) => {
+        const opt = document.createElement('option');
+        opt.value = f.id;
+        opt.textContent = `${idx + 1}. ${f.homeCode} vs ${f.awayCode} (${f.label || '2x' + f.halfMinutes + "'"})`;
+        selectEl.appendChild(opt);
+      });
+      if (prevVal && list.some(f => f.id === prevVal)) {
+        selectEl.value = prevVal;
+      }
+
+      // Renderizar tarjetas en la pestaña Partidos
+      const container = document.getElementById('fixturesListContainer');
+      container.innerHTML = '';
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center; padding:12px;">No hay partidos guardados. Agrega uno arriba.</div>';
+        return;
+      }
+
+      list.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'fixture-item';
+        row.innerHTML = `
+          <div class="fixture-teams-badge">
+            <div class="mini-swatch"><div style="background:${f.homeColor1}"></div><div style="background:${f.homeColor2}"></div></div>
+            <span>${f.homeCode}</span>
+            <span style="color:#64748b; font-size:11px;">vs</span>
+            <span>${f.awayCode}</span>
+            <div class="mini-swatch"><div style="background:${f.awayColor1}"></div><div style="background:${f.awayColor2}"></div></div>
+            <span class="fixture-meta-tag">${f.label || ''} • 2x${f.halfMinutes || 20}'</span>
+          </div>
+          <div class="fixture-btns">
+            <button class="btn-load-match" onclick="loadFixtureById('${f.id}')">▶ Cargar al Aire</button>
+            <button class="btn-redcard" onclick="deleteFixtureById('${f.id}')">✕</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
     function renderUI(updateScoresImmediately = true) {
-      // Nombres y colores en el Scoreboard
       document.getElementById('displayHomeCode').textContent = state.homeCode;
       document.getElementById('displayAwayCode').textContent = state.awayCode;
       document.getElementById('homeStripe1').style.background = state.homeColor1;
@@ -1422,7 +1751,6 @@
       document.getElementById('awayStripe1').style.background = state.awayColor1;
       document.getElementById('awayStripe2').style.background = state.awayColor2;
 
-      // Nombres y colores en las tarjetas del Panel en Vivo
       document.getElementById('unitHomeName').textContent = state.homeCode;
       document.getElementById('unitAwayName').textContent = state.awayCode;
       document.getElementById('unitHomeC1').style.background = state.homeColor1;
@@ -1437,13 +1765,11 @@
         document.getElementById('unitAwayScore').textContent = state.awayScore;
       }
 
-      // Tarjetas Rojas
       renderRedCards('homeRedCards', state.homeRed || 0);
       renderRedCards('awayRedCards', state.awayRed || 0);
       document.getElementById('btnHomeRed').textContent = `🟥 ${state.homeRed || 0}`;
       document.getElementById('btnAwayRed').textContent = `🟥 ${state.awayRed || 0}`;
 
-      // Tanda de Penales
       document.getElementById('chkPenalties').checked = !!state.showPenalties;
       document.getElementById('penaltiesControls').style.display = state.showPenalties ? 'block' : 'none';
       document.getElementById('penaltiesDrawer').classList.toggle('active', !!state.showPenalties);
@@ -1452,7 +1778,6 @@
       renderPenaltyDots('penRowHome', state.penHome || []);
       renderPenaltyDots('penRowAway', state.penAway || []);
 
-      // Botón Maestro de Reloj
       const masterBtn = document.getElementById('btnMasterClock');
       if (state.isRunning) {
         masterBtn.textContent = "⏸ PAUSAR RELOJ";
@@ -1462,7 +1787,6 @@
         masterBtn.classList.remove('running');
       }
 
-      // Configuración de tiempos (20, 30, 45)
       document.getElementById('formatLabelBadge').textContent = `Formato: 2 x ${state.halfMinutes}'`;
       document.getElementById('btnStart2T').textContent = `2T (${state.halfMinutes}:00)`;
       document.getElementById('clockPeriodLabel').textContent = state.period === 2 ? '2do Tiempo' : '1er Tiempo';
@@ -1478,7 +1802,6 @@
         if (btn) btn.classList.toggle('active-chip', state.addedTime === a);
       });
 
-      // Inputs de configuración
       if (document.activeElement.id !== 'inputHomeCode') document.getElementById('inputHomeCode').value = state.homeCode;
       if (document.activeElement.id !== 'inputAwayCode') document.getElementById('inputAwayCode').value = state.awayCode;
       document.getElementById('inputHomeColor1').value = state.homeColor1;
@@ -1486,7 +1809,6 @@
       document.getElementById('inputAwayColor1').value = state.awayColor1;
       document.getElementById('inputAwayColor2').value = state.awayColor2;
 
-      // Badge de tiempo añadido
       const badge = document.getElementById('addedBadge');
       if (state.addedTime > 0) {
         badge.textContent = '+' + state.addedTime;
@@ -1495,6 +1817,7 @@
         badge.classList.remove('active');
       }
 
+      renderFixturesList();
       updateTimerText();
     }
 
