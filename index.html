@@ -459,18 +459,22 @@
       border: 1px solid rgba(52, 211, 153, 0.35);
     }
 
-    /* BARRA DE CAMBIO RÁPIDO DE PARTIDO */
+    /* BARRA DE CAMBIO RÁPIDO (SOLO APARECE SI HAY GUARDADOS) */
     .quick-fixture-bar {
       background: #0f172a;
       border: 1px solid #28354f;
       border-radius: 12px;
       padding: 10px 12px;
       margin-bottom: 14px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
+    }
+
+    .quick-fixture-bar.visible {
+      display: flex;
     }
 
     .quick-fixture-label {
@@ -564,6 +568,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .card-label {
@@ -782,6 +788,11 @@
       text-transform: uppercase;
     }
 
+    input.input-error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+    }
+
     .colors-picker-box {
       display: flex;
       align-items: center;
@@ -815,7 +826,7 @@
       margin-top: 6px;
     }
 
-    /* LISTA DE PARTIDOS GUARDADOS (FIXTURES) */
+    /* LISTA DE CONFIGURACIONES GUARDADAS */
     .fixtures-list {
       display: flex;
       flex-direction: column;
@@ -841,6 +852,17 @@
       gap: 10px;
       font-weight: 800;
       font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    .fixture-custom-name {
+      color: #38bdf8;
+      font-weight: 800;
+      font-size: 13px;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 4px 9px;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
     }
 
     .mini-swatch {
@@ -860,8 +882,8 @@
 
     .fixture-meta-tag {
       font-size: 11px;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
+      color: #94a3b8;
+      background: #1e293b;
       padding: 3px 8px;
       border-radius: 6px;
       font-weight: 700;
@@ -875,9 +897,22 @@
     .btn-load-match {
       background: #2563eb;
       color: #fff;
-      padding: 7px 12px;
-      font-size: 11px;
-      border-radius: 7px;
+      padding: 8px 14px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .save-row-grid {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 600px) {
+      .save-row-grid > * {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -989,19 +1024,19 @@
       <span class="status-pill" id="connStatus">Conectando...</span>
     </div>
 
-    <!-- BARRA DE CAMBIO RÁPIDO DE PARTIDO PROGRAMADO -->
-    <div class="quick-fixture-bar">
-      <span class="quick-fixture-label">📋 Cambio Rápido:</span>
+    <!-- BARRA DE CAMBIO RÁPIDO (Solo se muestra cuando tú has guardado al menos 1 configuración) -->
+    <div class="quick-fixture-bar" id="quickFixtureBar">
+      <span class="quick-fixture-label">📋 Tus Guardados:</span>
       <div class="quick-fixture-actions">
         <select id="quickFixtureSelect"></select>
-        <button class="btn-load-match" onclick="loadSelectedFixture()">Cargar Partido</button>
+        <button class="btn-load-match" onclick="loadSelectedFixture()">Cargar</button>
       </div>
     </div>
 
     <!-- Pestañas de navegación -->
     <div class="nav-tabs">
       <button class="tab-btn active" id="tabBtnLive" onclick="switchTab('live')">⚽ En Vivo</button>
-      <button class="tab-btn" id="tabBtnFixtures" onclick="switchTab('fixtures')">📋 Partidos (<span id="fixtureCountBadge">0</span>)</button>
+      <button class="tab-btn" id="tabBtnFixtures" onclick="switchTab('fixtures')">📋 Guardados (<span id="fixtureCountBadge">0</span>)</button>
       <button class="tab-btn" id="tabBtnSetup" onclick="switchTab('setup')">⚙️ Ajustes</button>
     </div>
 
@@ -1121,15 +1156,14 @@
     </div>
 
     <!-- ==========================================
-         VISTA 2: PARTIDOS PROGRAMADOS (FIXTURES)
+         VISTA 2: CONFIGURACIONES GUARDADAS (PERSONALIZADAS)
          ========================================== -->
     <div class="tab-view" id="viewFixtures">
       
-      <!-- Crear / Guardar nuevo partido en la lista -->
+      <!-- Crear nueva configuración con nombre personalizado -->
       <div class="card-box">
         <div class="card-header">
-          <span class="card-label">Agregar Partido a la Programación</span>
-          <button class="btn-sub" onclick="saveCurrentAsFixture()">+ Guardar Equipos Actuales</button>
+          <span class="card-label">Crear Nueva Configuración</span>
         </div>
 
         <div class="live-teams-row" style="margin-bottom: 10px;">
@@ -1156,20 +1190,29 @@
           </div>
         </div>
 
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <input type="text" id="newFixLabel" placeholder="Etiqueta opcional (ej. Cancha 1 - 4:00 PM)" style="text-transform: none; text-align: left; flex: 1;">
-          <select id="newFixHalfMins" style="max-width: 130px;">
+        <div class="save-row-grid">
+          <input type="text" id="newFixLabel" placeholder="Nombre de la configuración (ej. Semifinal / Cancha 1)" style="text-transform: none; text-align: left; flex: 1;" oninput="this.classList.remove('input-error')">
+          <select id="newFixHalfMins" style="max-width: 140px;">
             <option value="20" selected>2 x 20 min</option>
             <option value="30">2 x 30 min</option>
             <option value="45">2 x 45 min</option>
           </select>
-          <button class="btn-load-match" style="padding: 10px 16px; white-space: nowrap;" onclick="addNewFixture()">➕ Guardar en Lista</button>
+          <button class="btn-load-match" style="padding: 10px 16px; white-space: nowrap;" onclick="addNewFixture()">💾 Guardar Configuración</button>
         </div>
       </div>
 
-      <!-- Lista de partidos listos para cargar en un clic -->
+      <!-- Guardar los equipos que están actualmente en pantalla con un nombre -->
+      <div class="card-box">
+        <div class="card-label" style="margin-bottom: 8px;">Guardar Configuración Actualmente en Pantalla</div>
+        <div class="save-row-grid">
+          <input type="text" id="currentFixName" placeholder="Ponle un nombre a la configuración actual..." style="text-transform: none; text-align: left; flex: 1;" oninput="this.classList.remove('input-error')">
+          <button class="btn-sub" style="padding: 10px 14px; white-space: nowrap; color: #38bdf8; border-color: #38bdf8;" onclick="saveCurrentAsFixture()">+ Guardar Actual</button>
+        </div>
+      </div>
+
+      <!-- Lista de configuraciones guardadas -->
       <div class="card-box" style="margin-bottom: 0;">
-        <div class="card-label">Partidos Guardados (Listos para salir al aire)</div>
+        <div class="card-label">Mis Configuraciones Guardadas</div>
         <div class="fixtures-list" id="fixturesListContainer"></div>
       </div>
 
@@ -1269,31 +1312,6 @@
       projectId: "marcardor-ucl"
     };
 
-    // Partidos preconfigurados de ejemplo por si la lista está vacía
-    const defaultFixtures = [
-      {
-        id: "fix_1",
-        label: "Partido 1",
-        homeCode: "BAR", homeColor1: "#a50044", homeColor2: "#004d98",
-        awayCode: "AVL", awayColor1: "#95bfe5", awayColor2: "#670e36",
-        halfMinutes: 20
-      },
-      {
-        id: "fix_2",
-        label: "Partido 2",
-        homeCode: "RMA", homeColor1: "#ffffff", homeColor2: "#ffffff",
-        awayCode: "STU", awayColor1: "#e52521", awayColor2: "#e52521",
-        halfMinutes: 20
-      },
-      {
-        id: "fix_3",
-        label: "Partido 3",
-        homeCode: "MCI", homeColor1: "#6cabdd", homeColor2: "#1c2c5b",
-        awayCode: "INT", awayColor1: "#010e80", awayColor2: "#000000",
-        halfMinutes: 20
-      }
-    ];
-
     let state = {
       homeCode: "BAR",
       awayCode: "AVL",
@@ -1315,7 +1333,7 @@
       showPenalties: false,
       penHome: [],
       penAway: [],
-      fixtures: defaultFixtures,
+      fixtures: [], // Inicia 100% vacío, sin plantillas forzadas ni autonumeración
       lastGoalEvent: null
     };
 
@@ -1336,7 +1354,7 @@
           ...remote,
           penHome: remote.penHome || [],
           penAway: remote.penAway || [],
-          fixtures: remote.fixtures || defaultFixtures
+          fixtures: Array.isArray(remote.fixtures) ? remote.fixtures : []
         };
 
         if (isFirstLoad) {
@@ -1376,20 +1394,28 @@
       document.getElementById('viewSetup').classList.toggle('active', tab === 'setup');
     }
 
-    // 4. GESTIÓN DE PARTIDOS PROGRAMADOS (FIXTURES)
+    // 4. GESTIÓN DE CONFIGURACIONES GUARDADAS (CON NOMBRE PERSONALIZADO)
     function addNewFixture() {
+      const nameInput = document.getElementById('newFixLabel');
+      const customName = nameInput.value.trim();
+
+      if (!customName) {
+        nameInput.classList.add('input-error');
+        nameInput.focus();
+        return;
+      }
+
       const hCode = (document.getElementById('newFixHomeCode').value || "LOC").toUpperCase().slice(0, 3);
       const aCode = (document.getElementById('newFixAwayCode').value || "VIS").toUpperCase().slice(0, 3);
       const hC1 = document.getElementById('newFixHomeC1').value;
       const hC2 = document.getElementById('newFixHomeC2').value;
       const aC1 = document.getElementById('newFixAwayC1').value;
       const aC2 = document.getElementById('newFixAwayC2').value;
-      const label = document.getElementById('newFixLabel').value.trim() || `Partido ${(state.fixtures || []).length + 1}`;
       const mins = parseInt(document.getElementById('newFixHalfMins').value) || 20;
 
       const newFix = {
-        id: 'fix_' + Date.now(),
-        label: label,
+        id: 'cfg_' + Date.now(),
+        label: customName,
         homeCode: hCode,
         homeColor1: hC1,
         homeColor2: hC2,
@@ -1400,14 +1426,23 @@
       };
 
       state.fixtures = [...(state.fixtures || []), newFix];
-      document.getElementById('newFixLabel').value = '';
+      nameInput.value = '';
       pushState();
     }
 
     function saveCurrentAsFixture() {
+      const nameInput = document.getElementById('currentFixName');
+      const customName = nameInput.value.trim();
+
+      if (!customName) {
+        nameInput.classList.add('input-error');
+        nameInput.focus();
+        return;
+      }
+
       const newFix = {
-        id: 'fix_' + Date.now(),
-        label: `Partido ${(state.fixtures || []).length + 1}`,
+        id: 'cfg_' + Date.now(),
+        label: customName,
         homeCode: state.homeCode,
         homeColor1: state.homeColor1,
         homeColor2: state.homeColor2,
@@ -1416,7 +1451,9 @@
         awayColor2: state.awayColor2,
         halfMinutes: state.halfMinutes || 20
       };
+
       state.fixtures = [...(state.fixtures || []), newFix];
+      nameInput.value = '';
       pushState();
     }
 
@@ -1424,7 +1461,6 @@
       const found = (state.fixtures || []).find(f => f.id === fixId);
       if (!found) return;
 
-      // Cargar equipos, colores, formato y reiniciar el marcador a 0-0 listo para jugar
       state.homeCode = found.homeCode;
       state.homeColor1 = found.homeColor1;
       state.homeColor2 = found.homeColor2;
@@ -1696,29 +1732,33 @@
     }
 
     function renderFixturesList() {
-      const list = state.fixtures || [];
+      const list = Array.isArray(state.fixtures) ? state.fixtures : [];
       document.getElementById('fixtureCountBadge').textContent = list.length;
 
-      // Renderizar selector rápido superior
+      // Mostrar u ocultar la barra superior según si el usuario guardó configuraciones
+      const quickBar = document.getElementById('quickFixtureBar');
+      quickBar.classList.toggle('visible', list.length > 0);
+
+      // Renderizar selector rápido superior sin numeración artificial
       const selectEl = document.getElementById('quickFixtureSelect');
       const prevVal = selectEl.value;
       selectEl.innerHTML = '';
-      list.forEach((f, idx) => {
+      list.forEach((f) => {
         const opt = document.createElement('option');
         opt.value = f.id;
-        opt.textContent = `${idx + 1}. ${f.homeCode} vs ${f.awayCode} (${f.label || '2x' + f.halfMinutes + "'"})`;
+        opt.textContent = `${f.label} — ${f.homeCode} vs ${f.awayCode} (2x${f.halfMinutes || 20}')`;
         selectEl.appendChild(opt);
       });
       if (prevVal && list.some(f => f.id === prevVal)) {
         selectEl.value = prevVal;
       }
 
-      // Renderizar tarjetas en la pestaña Partidos
+      // Renderizar tarjetas en la pestaña Guardados
       const container = document.getElementById('fixturesListContainer');
       container.innerHTML = '';
 
       if (list.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center; padding:12px;">No hay partidos guardados. Agrega uno arriba.</div>';
+        container.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center; padding:16px;">No tienes ninguna configuración guardada todavía. Ponle un nombre arriba y guárdala cuando quieras.</div>';
         return;
       }
 
@@ -1727,15 +1767,16 @@
         row.className = 'fixture-item';
         row.innerHTML = `
           <div class="fixture-teams-badge">
+            <span class="fixture-custom-name">${f.label}</span>
             <div class="mini-swatch"><div style="background:${f.homeColor1}"></div><div style="background:${f.homeColor2}"></div></div>
             <span>${f.homeCode}</span>
             <span style="color:#64748b; font-size:11px;">vs</span>
             <span>${f.awayCode}</span>
             <div class="mini-swatch"><div style="background:${f.awayColor1}"></div><div style="background:${f.awayColor2}"></div></div>
-            <span class="fixture-meta-tag">${f.label || ''} • 2x${f.halfMinutes || 20}'</span>
+            <span class="fixture-meta-tag">2x${f.halfMinutes || 20}'</span>
           </div>
           <div class="fixture-btns">
-            <button class="btn-load-match" onclick="loadFixtureById('${f.id}')">▶ Cargar al Aire</button>
+            <button class="btn-load-match" onclick="loadFixtureById('${f.id}')">▶ Cargar</button>
             <button class="btn-redcard" onclick="deleteFixtureById('${f.id}')">✕</button>
           </div>
         `;
